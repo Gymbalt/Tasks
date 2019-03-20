@@ -1,13 +1,14 @@
 #!Тестовое задание №1
-from utils import get_data_from_file, fill_data_in_file
 
 
-def run_calculate(k: int):
+def run(k: int, size: int):
     """Запуск расчета
+    :param size: количество значений в списке
     :param k: число неповторяющихся элементов
     :return:
     """
-    data = [x for x in get_data_from_file()]
+
+    data = [(x // 2) for x in range(size)]
 
     for i in range(0, k):
 
@@ -23,12 +24,8 @@ def run_calculate(k: int):
                 index += 1
         data.append(value)
 
-    print(data[len(data) - 3 - 1:len(data)])
-    # with open('result_task1.txt', 'w') as f:
-    #     for x in data:
-    #         f.write(str(x) + '\n')
+    print(data[len(data) - k:len(data)])
 
 
 if __name__ == "__main__":
-    fill_data_in_file()
-    run_calculate(4)
+    run(5, 30)

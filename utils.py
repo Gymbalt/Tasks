@@ -1,25 +1,22 @@
 #!Вспомогательные ф-ии
 from datetime import datetime
-from typing import Iterable, Tuple
-
-import random
+from typing import Iterable, Tuple, List
 
 Point = Tuple[datetime, float]
 DB_NAME = ":memory:"
 
 
-def median(list_of_data: list) -> float:
+def median(list_of_data: List[float]) -> float:
     """ Расчет медианы
     :param list_of_data: список значений (окно)
     :return: медиана
     """
-
     if len(list_of_data) % 2 == 0:
         mdn1 = list_of_data[int(len(list_of_data) / 2 - 1)]
         mdn2 = list_of_data[int(len(list_of_data) / 2)]
         return (mdn1 + mdn2) / 2
     else:
-        return list_of_data[int(len(list_of_data) // 2)][1]
+        return list_of_data[int(len(list_of_data) // 2)]
 
 
 def write_data_in_db(conn: 'Connection', data: Iterable):
@@ -50,72 +47,35 @@ def read_data_from_db(conn: 'Connection') -> Iterable[Point]:
     # print(cursor.fetchall()) # or use fetchone() or fetchmany(size=cursor.arraysize)
 
 
-def write_data_in_file(data: Iterable, path: str = 'Time series.txt'):
+def write_txt(data: Iterable, path: str = 'Time series.txt'):
     """ Запись данных в текстовый файл.
     :param path: путь к файлу
     :param data: набор данных
     """
-
-    with open(path, 'w') as f:
+    with open(path, 'a') as f:
         for tup in data:
             f.write(str(tup[0]) + '\t' + str(tup[1]) + '\n')
 
 
-def read_data_from_file(path: str = 'Time series.txt') -> Iterable[Point]:
-    """ Запись данных в текстовый файл.
+def read_txt(path: str = 'Time series.txt') -> Iterable[str]:
+    """ Чтение данных из текстового файла.
     :param path: путь к файлу
-    :return Iterable[tuple]
+    :return str
     """
-
     try:
         with open(path, 'r') as f:
             for line in f:
-                yield datetime.strptime(line.split('\t')[0], '%Y-%m-%d %H:%M:%S'), float(line.split('\t')[1])
+                yield str(line)
     except IOError:
         print('An IOError has occurred!')
     except Exception:
         print('An Exception has occurred!')
 
 
-def fill_data_in_file(path: str = 'Series.txt'):
-    """Запись данных в текстовый файл.
-    :param path: путь к файлу
+def parse(string: str) -> Point:
+    """ Преобразует str в Iterable[Point].
+    :param string: строка
+    :return tuple
     """
+    return datetime.strptime(string.split('\t')[0], '%Y-%m-%d %H:%M:%S'), float(string.split('\t')[1])
 
-    with open(path, 'w') as f:
-        for x in range(0, 20):
-            f.write(str(random.randint(0, 100)) + '\n')
-
-
-def get_data_from_file(path: str = 'Series.txt') -> Iterable[int]:
-    """Запись данных в текстовый файл.
-    :param path: путь к файлу
-    :return Iterable[int]
-    """
-
-    try:
-        with open(path, 'r') as f:
-            for line in f:
-                yield float(line)
-    except IOError:
-        print('An IOError has occurred!')
-    except Exception:
-        print('An Exception has occurred!')
-
-
-def write_result(min_value: float, max_value: float, avg_value: float, median_value: float, count: int,
-                 path: str = 'result.txt'):
-    """ Запись результата
-    :param min_value: минимум
-    :param max_value: максимум
-    :param avg_value: среднее
-    :param median_value: медиана
-    :param count: счетчик окон
-    :param path: путь к файлу
-    :return:
-    """
-
-    with open(path, 'a') as f:
-        f.write('=======window======= :' + str(count) + '\n')
-        f.write('Max: ' + str(max_value) + '; Min: ' + str(min_value) + '; Avg: ' + str(avg_value) + '; Mdn: ' + str(
-            median_value) + '\n')
